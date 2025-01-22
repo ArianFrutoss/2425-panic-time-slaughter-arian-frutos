@@ -1,4 +1,4 @@
-const { probCalculationDice, coinSearchDice, selectedNumberDice } = require("../../dice");
+const { probCalculationDice, coinSearchDice, selectedNumberDice, kmsDice } = require("../../dice");
 const Player = require("../models/Player");
 const PreciousStone = require("../models/PreciousStone");
 const Saddlebag = require("../models/Saddlebag");
@@ -46,6 +46,7 @@ const postTime = async () => {
 
 const executeTime = async () => {
     const players = await populatePlayers();
+    const times = await Time.find();
     const saddlebags = await Saddlebag.find();
     const preciousStones = await PreciousStone.find();
     
@@ -54,11 +55,17 @@ const executeTime = async () => {
         
         switch (i) {
             case 5:
-            console.log('The players Rest.');
-            rest(players);
+                console.log('The players Rest.');
+                rest(players);
 
-            console.log('The players Collect.');
-            collect(players, saddlebags, preciousStones);
+                console.log('The players Collect.');
+                collect(players, saddlebags, preciousStones);
+            break;
+
+            case 12:
+                console.log('The players Advance.');
+                advance(times);
+            break;
         }
     }
 }
@@ -100,6 +107,22 @@ const collect = (players, saddlebags, preciousStones) => {
         player.equipment.saddlebag.push(saddlebags[saddlebagsDice]);
         console.log(`obtain ${saddlebags[saddlebagsDice].name}`);
     })
+}
+
+const advance = (times) => {
+    const dice = kmsDice();
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const lastTime = times[times.length - 1];
+    const newTime = {
+        day_number: lastTime.day_number++,
+        day_week: days[times.length],
+        km_traveled: dice,
+        km_total: lastTime.km_total + dice,
+    };
+
+    const time = new Time(newTime);
+    
+    console.log(`Roll a dice, the result is ${dice}, the players travel ${time.km_traveled} kms and the total kms traveled are ${time.km_total}`);
 }
 
 module.exports = {
