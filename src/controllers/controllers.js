@@ -36,7 +36,7 @@ const getTime = async (req, res) => {
 
 const postTime = async (req, res) => {
     try{
-        const time = await services.getTime();
+        const time = await services.postTime();
 
         if (time.length === 0) {
             return res.status(404).send({message: "Time don't exist"});
